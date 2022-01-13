@@ -6,7 +6,6 @@ import dev.fsantana.personapi.repository.PersonsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +26,16 @@ public class PersonService {
   public Person findById(Long id) {
     Optional<Person> personOptional = this.repository.findById(id);
     return personOptional.orElseThrow(() -> new PersonNotFoundException("Person not found!"));
+  }
+
+  public void delete(Long id) {
+    findById(id);
+    this.repository.deleteById(id);
+  }
+
+  public Person update(Long id, Person toModel) {
+    Person person = this.findById(id);
+    toModel.setId(person.getId());
+    return this.repository.save(toModel);
   }
 }

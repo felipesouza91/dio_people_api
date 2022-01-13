@@ -40,4 +40,18 @@ public class PersonController {
     Person person = mapper.toModel(personDto);
     return this.personService.savePerson(person);
   }
+
+  @PutMapping("{/id}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Person savePerson(@RequestParam Long id,@RequestBody PersonInputDTO personDto) {
+    Person person = this.personService.update(id, mapper.toModel(personDto));
+    return this.personService.savePerson(person);
+  }
+
+
+  @DeleteMapping("{/id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void remove(Long id) {
+    this.personService.delete(id);
+  }
 }
