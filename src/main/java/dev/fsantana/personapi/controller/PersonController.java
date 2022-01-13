@@ -22,16 +22,22 @@ public class PersonController {
 
   private PersonMapper mapper = PersonMapper.INSTANCE;
 
+  @GetMapping
+  public List<PersonDTO> getAll() {
+    List<Person> list = this.personService.findAll();
+    return this.mapper.toDTOList(list);
+  }
+
+  @GetMapping("{/id}")
+  public PersonDTO getPerson(@RequestParam Long id) {
+    Person person = this.personService.findById(id);
+    return this.mapper.toDTO(person);
+  }
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Person savePerson(@RequestBody PersonInputDTO personDto) {
     Person person = mapper.toModel(personDto);
     return this.personService.savePerson(person);
-  }
-
-  @GetMapping
-  public List<PersonDTO> getAll() {
-    List<Person> list = this.personService.findAll();
-    return this.mapper.toDTOList(list);
   }
 }
