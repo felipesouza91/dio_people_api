@@ -1,6 +1,8 @@
 package dev.fsantana.personapi.controller;
 
+import dev.fsantana.mapper.PersonMapper;
 import dev.fsantana.personapi.dto.input.PersonInputDTO;
+import dev.fsantana.personapi.dto.output.PersonDTO;
 import dev.fsantana.personapi.entity.Person;
 import dev.fsantana.personapi.entity.Phone;
 import dev.fsantana.personapi.repository.PersonsRepository;
@@ -9,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/person")
@@ -20,16 +20,18 @@ public class PersonController {
   @Autowired
   private PersonService personService;
 
+  private PersonMapper mapper = PersonMapper.INSTANCE;
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Person savePerson(@RequestBody() @Valid PersonInputDTO personDto) {
-    List<Phone> phones = personDto.getPhones().stream()
-        .map( input -> Phone.builder().number(input.getNumber())
-            .type(input.getType()).build()
-        ).collect(Collectors.toList());
-    Person person = Person.builder().cpf(personDto.getCpf()).birthday(personDto.getBirthday())
-        .firstName(personDto.getFirstName()).lastName(personDto.getLastName())
-          .phones(phones).build();
+  public Person savePerson(@RequestBody PersonInputDTO personDto) {
+    Person person = mapper.toModel(personDto);
     return this.personService.savePerson(person);
+  }
+
+  @GetMapping
+  public List<PersonDTO> getAll() {
+    List<Person> list = this.personService.findAll();
+    return this.mapper.toDTOList(list);
   }
 }
